@@ -90,7 +90,7 @@ public class Projecte {
                 }
             //en cas de areixe cualsevol altre error 
             } catch (IOException ex) {
-                System.out.println("Error grep,contacta amb l'administrador");
+                
             } catch (ClassNotFoundException ex) {
             //finatlitzem aquest     
             } finally {
