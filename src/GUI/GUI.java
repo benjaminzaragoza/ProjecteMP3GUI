@@ -12,6 +12,14 @@ import projecte.Projecte;
 import metodes.GUI_UF3;
 import projecte.Dj;
 import finestrabenvinguda.finestrabenvinguda;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import static metodes.GUI_UF3.carregaTaula;
 
@@ -22,31 +30,46 @@ import static metodes.GUI_UF3.carregaTaula;
  * @author alumne
  */
 public class GUI extends javax.swing.JFrame {
-
+    //carreugem fitxer de dades
+    private static File fitxer = new File("dj.db");
     /**
      * Creates new form GUI
      */
-    
+    //pasem valor -1 per tal de si tenim alguna fila seleccionada
     private static int filaSel=-1;
     private int primeraCasellaBuida=-1;
+    
+    /**
+     * Inicialitzem classe procipal de el nostre projecte
+     */
+    
     public GUI() {
         
+        //Acontinuacio iniciem les intefifices grafiques
+        //del nostre projecte.
         initComponents();
         inicialitzaComponents();
-        
+                
+                //modifiquem els colors de la taula per tal que sino tinguem imatge de fons canviar el color
                 this.getContentPane().setBackground(Color.black);
                 taula.setBackground(Color.white);
 
-                
+        //seleccionem per defecte el boolea en true
         opcioMasculi.setSelected(true);
     }
    // private void ventanillaBenvinguda(){
     
    // }
+    
+    /**
+     * Inicialitzem components del projecte
+     */
     private void inicialitzaComponents(){
         
+        //atraves de la variable seguent mostrem si en el borrat tenim una casella buida per omplir
         primeraCasellaBuida=Projecte.inicialitzarVariables();
         
+        //carreguem les opcions que pasarem per la taula
         GUI_UF3.carregaTaula(new String[]{"Fila","Nom", "Lloc","Naixement","Home","Diners"}, 
                 transformaDades(Projecte.getArray())
 //                new Object[][]{
@@ -57,15 +80,17 @@ public class GUI extends javax.swing.JFrame {
     
     }
     /**
-     * Mètode que transforma l'array de pilots en una matriu
+     * Transformem en nostre array en una matriu
+     * 
      * @param dades array que conté les dades a transformar
-     * @return una matriu d'objectes que conté les dades que ens interessen dels pilots
+     * @return una matriu d'objectes que conté les dades que ens interessen
      */
     public static Object[][] transformaDades(Dj[] dades){
         Object[][] resultat=new Object[dades.length][6];
-        //Variable per comptar el número de pilots en dades que hi ha a l'array de dades
+        //Variable per comptar el número de dj en dades que hi ha a l'array de dades
         int omplits=0;
         
+        //pasem la dedes inserides per saber,sino el tenim omplit
         for (int i = 0; i < dades.length; i++) {
             if(dades[i].isOmplit()){
                 resultat[omplits][0]=i;
@@ -77,7 +102,7 @@ public class GUI extends javax.swing.JFrame {
                 omplits++;
             }
         }
-        //Retornem només els pilots plens
+        //Retornem només els dj plens
         return Arrays.copyOf(resultat,omplits);
     
     }
@@ -309,10 +334,16 @@ public class GUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_opcioMasculiActionPerformed
 
+    /**
+     * Metode el cual atraves de un element seleccionat ens dona els valors adients per cada un
+     * @param evt 
+     */
+    
     private void taulaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taulaMouseClicked
         //actualitzo la fila seleccionada
         filaSel=taula.getSelectedRow();
         
+        //mirem si tenim fila seleccionada i mostrem opcions per defecte en cas qua no es aixi
         if(filaSel==-1){
             botoBorrar.setEnabled(false);
             botoModificar.setEnabled(false);
@@ -323,6 +354,7 @@ public class GUI extends javax.swing.JFrame {
             opcioMasculi.setSelected(true);
         }
         else{
+            //En cas de teni fila seleccionada mostres a cada una de les caselles el seu valor actualitzat
             botoBorrar.setEnabled(true);
             botoModificar.setEnabled(true);
         
@@ -344,7 +376,6 @@ public class GUI extends javax.swing.JFrame {
      */
     
     private boolean dadesCorrectes(){
-    
         try {
             casellaNom.getText().trim().charAt(0);
             //if(casellaNom.getText().trim().equals("")) throw new StringIndexOutOfBoundsException();
@@ -355,7 +386,10 @@ public class GUI extends javax.swing.JFrame {
         }  
         return true;
     }
-    
+    /**
+     * Metode el qual ens deixa modificar o no un dj una vegada inserit
+     * @param evt 
+     */
     private void botoModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoModificarActionPerformed
         
         //Mirem si les dades son correctes avans de fer res,Sino ho son mostrem una finestra amb un missatge 
@@ -368,13 +402,14 @@ public class GUI extends javax.swing.JFrame {
         int iArray=(int)taula.getValueAt(filaSel,0);
         Dj[] array=Projecte.getArray();
         
+        //carreguem cada una de les caselles de el array 
         array[iArray].setNom(casellaNom.getText().trim());
         array[iArray].setLloc(casellaLloc.getText().trim());
         array[iArray].setNaixement(Integer.valueOf(casellaNaixement.getText()));
         array[iArray].setHome(opcioMasculi.isSelected());
         array[iArray].setDiners(Double.valueOf(casellaDiners.getText()));
 
-        
+        //actualitzem la taula
         GUI_UF3.carregaTaula(new String[]{"Fila","Nom", "Lloc","Naixement","Home","Diners"}, 
                 transformaDades(Projecte.getArray())
                 , taula);
@@ -389,60 +424,96 @@ public class GUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_casellaDinersActionPerformed
 
+    /**
+     * Metode el qual ens permet inserir un nou element dintr el array de dj
+     * @param evt 
+     */
     private void InserirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InserirActionPerformed
-        // TODO add your handling code here:
-
+        // Carreguem el array de dj
+        Dj[] array=Projecte.getArray();
         
-        
-        
-        
-        
-        
+        //comprovem que les dades pasades son correctes dintre els parametres establerts
         if(!dadesCorrectes()){
             
-            JOptionPane.showMessageDialog(this,"Dades de les caselles incorrectes");
+            JOptionPane.showMessageDialog(this,"Dades de les caselles incorrectes, insereix dades");
             return;
-        }   
-              Dj[] array=Projecte.getArray();
+        }
 
-        array[primeraCasellaBuida].setNom(casellaNom.getText().trim());
-        array[primeraCasellaBuida].setLloc(casellaLloc.getText().trim());
-        array[primeraCasellaBuida].setNaixement(Integer.valueOf(casellaNaixement.getText()));
-        array[primeraCasellaBuida].setHome(opcioMasculi.isSelected());
-        array[primeraCasellaBuida].setDiners(Double.valueOf(casellaDiners.getText()));
-        array[primeraCasellaBuida].setOmplit(true);
-        primeraCasellaBuida++;
-        //JOptionPane.showMessageDialog(this,"Nou registre inserit");
-     // dades[6]=opcioMasculi.isSelected();
+        /**
+         * comprovem que per inserir un nou dj tanim espai suficient dintre el arrray per tal de
+         * poder inserir un de nou
+         */
+        
+            try {
+                    //carreguem una nova entrada introduida per l'usuari
+                    array[primeraCasellaBuida].setNom(casellaNom.getText().trim());
+                    array[primeraCasellaBuida].setLloc(casellaLloc.getText().trim());
+                    array[primeraCasellaBuida].setNaixement(Integer.valueOf(casellaNaixement.getText()));
+                    array[primeraCasellaBuida].setHome(opcioMasculi.isSelected());
+                    array[primeraCasellaBuida].setDiners(Double.valueOf(casellaDiners.getText()));
+                    array[primeraCasellaBuida].setOmplit(true);
+                    primeraCasellaBuida++;
+                    
+            } catch (ArrayIndexOutOfBoundsException e) {
+                   
+                   //mirem si tenim espai dintre el array,sino en motra el seguent missatge i ens diu si volem sorti o continua sense guardar res
+                   Object [] opciones ={"Si","No"};
+                   
+                   //motrem missatge per tal de informar a l'usari que quina opcio vol continuar
+                int eleccion = JOptionPane.showOptionDialog(rootPane,"Atenció, no caben mes dj en memoria. Si continues no es guardara el inserit. Vols continuar o vols sortir?(N/S):","Informacio"
+                 ,JOptionPane.YES_NO_OPTION,
+                 //mpsttrem com ocpio predeterminada el no 
+                 JOptionPane.QUESTION_MESSAGE,null,opciones,"No");
+                 //segons el seleccionat, ho be no fem res o be sortim de el projecte
+                if (eleccion == JOptionPane.NO_OPTION)
+                    {
+                      System.exit(0);
+                    }else{
+                     System.out.println("");
+                    }
+            //si ens sorgueix cualsevol altre error mostrem el seguent missatge
+            }catch (Exception e) {
+                JOptionPane.showMessageDialog(this,"Error greu contacta amb l'administrador");}
+    
+            //carreguem la taula altre com per actualitzar el nou dj
      GUI_UF3.carregaTaula(new String[]{"Fila","Nom", "Lloc","Naixement","Home","Diners"}, 
                 transformaDades(Projecte.getArray())
                 , taula);
-                 
+                  
     }//GEN-LAST:event_InserirActionPerformed
 
     private void SortirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SortirActionPerformed
+        //seleccionem la opcio sortir en cas que ens tanquin per la opcio sortir
         projecte.Projecte.sortir();
     }//GEN-LAST:event_SortirActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        // TODO add your handling code here:
+        //seleccionem la opcio sortir en cas que ens tanquin per la creu de la finestra
                 projecte.Projecte.sortir();
     }//GEN-LAST:event_formWindowClosing
-
+    /**
+     * Carreguem metode borrar per tal de poder borrar o no un dj de l'array
+     * @param evt 
+     */
     private void botoBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoBorrarActionPerformed
-        // TODO add your handling code here:
         
+        //passem model predeterminat de la nostra taula
         DefaultTableModel taula1 = (DefaultTableModel) taula.getModel();
-
+        
+        //carreguem el array de dj
         Dj[] array=Projecte.getArray();
+        
+        //borrem atraves de la fila seleccionada
         filaSel=taula.getSelectedRow();
         int [] rows = taula.getSelectedRows(); 
         Arrays.sort(rows);
         
+        //advertim que seleccioni una fila el usuari en cas que no haigui seleciionat res
         if (filaSel==-1){     
                 JOptionPane.showMessageDialog(null,"Selecciona una fila"); 
         }else{
         
+        //atraves la poscio establerta,seleccionada ateriorment recorrem l'array i borem la posicio seleccionada
         for (int i=rows.length-1; i>=0; i--) { 
             taula1.removeRow(rows[i]);}
         
@@ -453,17 +524,21 @@ public class GUI extends javax.swing.JFrame {
         array[filaSel].setDiners(Double.valueOf(casellaDiners.getText()));
         array[filaSel].setOmplit(false);
         
+        //Descrementem en un el nombre de posiscions omplertes en el array
         primeraCasellaBuida--; 
 
         } 
+        //tornem a carregar la taula per guardar els canvis
          GUI_UF3.carregaTaula(new String[]{"Fila","Nom", "Lloc","Naixement","Home","Diners"}, 
          transformaDades(Projecte.getArray())
          , taula);
     }//GEN-LAST:event_botoBorrarActionPerformed
 
     /**
+     * 
      * @param args the command line arguments
      */
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -488,6 +563,9 @@ public class GUI extends javax.swing.JFrame {
         }
         //</editor-fold>
         
+        /**En primer lloc carreguem finestra de inici avans de mostrar el projecte
+         * ,indiquem el temps de durarada de aquesta i la execusio de aquesta
+         */
         finestrabenvinguda f = new finestrabenvinguda(); 
         f.setVisible (true);
         try {

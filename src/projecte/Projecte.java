@@ -21,10 +21,12 @@ import java.util.Scanner;
  * @author alumne
  */
 public class Projecte {
-
+    
+    //tectem espai maxim de espai que tenim en el array
     private static final int MAX_DJS = 5000;
     private static Dj[] array = new Dj[MAX_DJS];
     private static int valor;
+    //generem un fitxer per tal de volcar a aquest els elements creats en el array    
     private static File fitxer = new File("dj.db");
 
     /**
@@ -56,13 +58,16 @@ public class Projecte {
     public static int inicialitzarVariables() {
         Dj p = null; //apuntar dj segons la casella
         int i = 0;
-
+        
+        //visulitzem si el fitxer existeix i tractem cada un dels errors que ens poden sorguir
         if (fitxer.exists()) {
 
             boolean finalitza = false;
 
             ObjectInputStream lleguir = null;
-
+            
+            //tractem en cas de no trenir mes llocs per omplir dintre el array
+            //i sino es aixi els volquem en un fitxer 
             try {
 
                 lleguir = new ObjectInputStream(new BufferedInputStream(new FileInputStream(fitxer)));
@@ -71,6 +76,7 @@ public class Projecte {
                     array[i] = (Dj) lleguir.readObject();
                     i++;
                 }
+                //en cas de no tenir espai mostrem el seguent 
             } catch (ArrayIndexOutOfBoundsException ex) {
 
                 System.err.println("Atenció, no caben mes dj dintre la base de dades. Si continues pots perdre dades. Vols continuar?(S/N):");
@@ -82,11 +88,11 @@ public class Projecte {
                 if (sn == 'N') {
                     finalitza = true;
                 }
-
+            //en cas de areixe cualsevol altre error 
             } catch (IOException ex) {
-
+                System.out.println("Error grep,contacta amb l'administrador");
             } catch (ClassNotFoundException ex) {
-
+            //finatlitzem aquest     
             } finally {
                 try {
                     lleguir.close();
@@ -98,6 +104,7 @@ public class Projecte {
                 }
             }
         }
+        //mpstrem cada posicio 
         int resultat=i;
         for (; i < array.length; i++) {
             array[i] = new Dj();
@@ -140,10 +147,12 @@ public class Projecte {
     }
 
     /**
-     * Tractem la opcio que volem escollir dintre el programa
+     * Metode principal el cual ens motra cada una de les opcions que tenim i segons la seleccionada
+     * fem una cosa o una altra
      */
     public static void tractarDj() {
-
+        
+        //atraves del el switch i el valor donat mostrem la opcio eleguida
         switch (valor) {
             case 1:
                 sortir();
@@ -172,12 +181,13 @@ public class Projecte {
      *
      * @return
      */
+    //opcio per sortir de el menu principal
     public static boolean opcioFinal() {
         return valor == 1;
     }
 
     /**
-     * Introduim dj dintre la base de dades
+     * Introduir valors per tal de carreguar un nou dj 
      */
     public static void introduirDj() {
         Scanner entText = new Scanner(System.in);
@@ -186,15 +196,18 @@ public class Projecte {
         boolean veritat;
         char eshome = ' ';
         Dj p = null;
-
+        
+        //recorrem el array miran si esta omplit o no i ens situem en la primera casella buida
         for (i = 0; i < array.length && array[i].isOmplit(); i++);
 
         System.out.println("\n");
-
+        
+        //mirem si tenim array ple o no
         if (i != array.length) {
 
             p = array[i]; // aixo es igual que array[i]
-
+            
+            //mortrem cada una de les caselles i el que es vol introduir
             System.out.print("Introdueix el nom: ");
             p.setNom(entText.skip("[\r\n]*").nextLine());
 
@@ -230,6 +243,7 @@ public class Projecte {
                     entNum.next();
                 }
             } while (veritat);
+            //una vegada intruida mostrem la dada introduida i el fem visible
             System.out.println("\n");
             System.out.println("Dades introduides ...");
             System.out.println("\n");
@@ -241,7 +255,7 @@ public class Projecte {
     }
 
     /**
-     * Borrem un Dj introduit per l'usuari
+     * Metode el qual borrarem un dj pasat anteriorment
      */
     public static void borrarDj() {
 
@@ -250,10 +264,12 @@ public class Projecte {
         Scanner entNum = new Scanner(System.in);
         char sn = 'n';
         int i;
-
+        
+        //passem array de dj
         for (i = 0; i < array.length; i++) {
             p = array[i];
-
+            
+            //si el tenim omplit mostrem cada un del dj i si volem que aquest sigui borrat o no
             if (p.isOmplit()) {
                 System.out.println(p);
                 do {
@@ -266,6 +282,7 @@ public class Projecte {
             }
         }
         System.out.println("\n");
+        //en cas de ser un si motrem el seguent missatge i canviem la variable omplit daquesta a false,per apareixe borrat
         if (sn == 's') {
             p.setOmplit(false);
             System.out.println("Dj borrat correctament");
@@ -284,18 +301,22 @@ public class Projecte {
         int cont = 1, i;
         char eshome = ' ';
         boolean veritat;
-
+        
+        //Recorrem el arrau establint si volem modificar les dades intoduides o no
         for (i = 0; i < array.length && sn != 'S' && sn != 'F'; i++) {
             if (array[i].isOmplit()) {
 
                 System.out.format("\nDj %d:\n", cont++);
                 System.out.println(array[i].toString());
-
+                
+                //mostrem el dj si volem modificarlo o no
                 do {
                     System.out.print("Vols modificar el dj? (S/N) ");
                     sn = entText.skip("[\r\n]*").nextLine().toUpperCase().charAt(0);
                     } while (sn != 'S' && sn != 'N');
-
+                
+                //en cas que sigui un si motrem les seves dades una per una i otorgem 
+                //la opcio de ser modificat o no per cada una de les seves opcions
                 switch (sn) {
                     case 'S':
                         System.out.println("\nNom: " + array[i].getNom());
@@ -304,10 +325,12 @@ public class Projecte {
                             sn = entText.skip("[\r\n]*").nextLine().toUpperCase().charAt(0);
                         } while (sn != 'S' && sn != 'N');
                         switch (sn) {
+                            //en cas que ens vulguin canviar modiiquem aquest aquest
                             case 'S':
                                 System.out.println("Quin nom posem? ");
                                 array[i].setNom(entText.skip("[\r\n]*").nextLine());
                                 break;
+                            //en cas que no sigui aixi no fem res    
                             case 'N':
                                 System.out.println("No canviem res... ");
                                 break;
@@ -403,14 +426,15 @@ public class Projecte {
                                 break;
                         }
                         break;
+                    //en cas d eno voler modificar res no fem res
                     case 'N':
                         System.out.println("No canviem res...");
                         break;
-
+                    //en cas de no eleguir una opcio establerta mostrem el seguent missatge    
                     default:
                         System.out.println("Opcio incorrecta....");
                 }
-
+            //en cas de seleccionar intro sense eleguir establir cap dada motrem el seguent    
             } else {
                 System.out.println("No hi ha s'han introduit dades.....");
                 break;
@@ -420,7 +444,7 @@ public class Projecte {
     }
 
     /**
-     * Llistem serie de Dj introduits anteriorment
+     * Metode el qual ens mostra cada un de els dj introduits un per un
      */
     public static void llistarDj() {
         Scanner entText = new Scanner(System.in);
@@ -428,10 +452,12 @@ public class Projecte {
         char sn = 'S';
         int i;
         boolean algun = false;
-
+        
+        //recorrem el array mostran per cada un dels dj si volem seguir mostran llista de dj establerta
         for (i = 0; i < array.length; i++) {
-            Dj p = array[i];
-
+            Dj p = array[i]; //carreguem array
+            
+            //mirem si tenim elements dintre el array
             if (p.isOmplit()) {
                 algun = true;
                 System.out.println(p);
@@ -445,23 +471,27 @@ public class Projecte {
                 break;
             }
         }
+        //En cas de no tenir elements en l'array mostrem el seguent missatge
         if (!algun) {
             System.out.println("\nNo hi ha dj per mostrar, si vols, primer crea'n.");
         }
     }
 
     /**
-     *
+     *Metode el qual ens permet recuperar un dj una vegada borrat anteriorment
      */
     public static void recuperarDJ() {
+        
         Scanner ent = new Scanner(System.in);
         //Primer recorrem l'array buscant caselles buides i preguntant quina volem recuperar
         char sn = 'N';
         int cont = 0, i;
+        //Recorrem tot el array motran cada pilot borrat i indicant si aquest es vol recuperar o no
         for (i = 0; i < array.length && sn != 'S' && sn != 'F'; i++) {
             if (!array[i].isOmplit()) {
                 System.out.format("\nDj %d:\n", ++cont);
                 System.out.println(array[i].toString());
+                //Mostrem el si es vol recuperar el dj o no
                 do {
                     System.out.println("\nVols recuperar el dj(S/N) o finalitzar la cerca (F)?:");
                     sn = ent.skip("[\r\n]*").nextLine().toUpperCase().charAt(0);
@@ -472,7 +502,8 @@ public class Projecte {
                 break;
             }
         }
-
+        
+        //si ens selecciona la opcio si, mostrem el seguent missatge i tornem a mostrar
         if (sn == 'S') {
             array[i].setOmplit(true);
             System.out.println("Dj recuperat correctament.");
@@ -490,6 +521,7 @@ public class Projecte {
     public static void sortir() {
 
         ObjectOutputStream escriptura = null;
+        //comprotrolem que en cas de escollir opcio sortir ens sorgueix cualsevol error
         try {
             escriptura = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(fitxer)));
 

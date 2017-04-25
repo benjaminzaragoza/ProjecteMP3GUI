@@ -10,21 +10,31 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 /**
- *
+ *Classe principal la qual atraves de aquesta mostrarem una finestra de inici avans de 
+ * mostrar el nostre projecte
  * @author alumne
  */
 public class finestrabenvinguda extends JFrame {
-
+    //declarem variables necesaries
     private Timer t;
     private ActionListener ac;
     private int x = 0;
-
+    
+    /**
+     * Metode el qual controlarem la sortida de aquest missatge per pantalla
+     */
     public finestrabenvinguda() {
+        //inciem componets misatge ,la seva localitzacio, i diem que sigui un misatge que ens apareixi de manera temporal
         initComponents();
         this.setLocationRelativeTo(null);
         ac = new ActionListener() {
 
             @Override
+            /**
+             * Controlem la barra de carregue la cual li diem el que socceix una vegada
+             * tenim el temps establert en el qual volem carreguar el nostre projecte,es a di,
+             * que fara una vegada tenim carreguada completament la carregua de la taula
+             */
             public void actionPerformed(ActionEvent e) {
                 x = x + 1;
                 jProgressBar1.setValue(x);
@@ -34,6 +44,7 @@ public class finestrabenvinguda extends JFrame {
                 }
             }
         };
+        // seleccionem el temps que tardara aquesta barra en carregar completament
         t = new Timer(50, ac);
         t.start();
     }
@@ -65,6 +76,7 @@ public class finestrabenvinguda extends JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
+     * Motrem el que ens carregui en primer lloc aquesta finesta i que ens tanqui aquesta
      * @param args the command line arguments
      */
     public static void main(String[] args) {
