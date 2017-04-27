@@ -23,7 +23,7 @@ import java.util.Scanner;
 public class Projecte {
     
     //tectem espai maxim de espai que tenim en el array
-    private static final int MAX_DJS = 5000;
+    private static final int MAX_DJS = 4000;
     private static Dj[] array = new Dj[MAX_DJS];
     private static int valor;
     //generem un fitxer per tal de volcar a aquest els elements creats en el array    

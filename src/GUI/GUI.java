@@ -32,6 +32,11 @@ import static metodes.GUI_UF3.carregaTaula;
 public class GUI extends javax.swing.JFrame {
     //carreugem fitxer de dades
     private static File fitxer = new File("dj.db");
+    //segons el boolea escollit mostrem el seguent missatge (encontes de true false)
+    private static final String MASCULI="Masculí";
+    private static final String FEMENI="Femení";
+
+    
     /**
      * Creates new form GUI
      */
@@ -70,12 +75,8 @@ public class GUI extends javax.swing.JFrame {
         primeraCasellaBuida=Projecte.inicialitzarVariables();
         
         //carreguem les opcions que pasarem per la taula
-        GUI_UF3.carregaTaula(new String[]{"Fila","Nom", "Lloc","Naixement","Home","Diners"}, 
+        GUI_UF3.carregaTaula(new String[]{"Fila","Nom", "Lloc","Naixement","Sexe","Diners"}, 
                 transformaDades(Projecte.getArray())
-//                new Object[][]{
-//                    {"Marc", 93, 2346.6, true},
-//                    {"Viñales", 25, 234.6, true}
-//                }
                 , taula);
     
     }
@@ -98,6 +99,12 @@ public class GUI extends javax.swing.JFrame {
                 resultat[omplits][2]=dades[i].getLloc();
                 resultat[omplits][3]=dades[i].getNaixement();
                 resultat[omplits][4]=dades[i].isHome();
+                //modiffiquem per tal de mostrar masculi o femeni en cas de ser el boolea true o false
+                if(dades[i].isHome())
+                   resultat[omplits][4]=MASCULI;
+                   
+               else resultat[omplits][4]=FEMENI;
+
                 resultat[omplits][5]=dades[i].getDiners();
                 omplits++;
             }
@@ -130,7 +137,6 @@ public class GUI extends javax.swing.JFrame {
         Inserir = new javax.swing.JButton();
         botoModificar = new javax.swing.JButton();
         botoBorrar = new javax.swing.JButton();
-        Recuperar = new javax.swing.JButton();
         Sortir = new javax.swing.JButton();
         casellaDiners = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
@@ -249,7 +255,7 @@ public class GUI extends javax.swing.JFrame {
                 botoModificarActionPerformed(evt);
             }
         });
-        getContentPane().add(botoModificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 620, -1, -1));
+        getContentPane().add(botoModificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 620, -1, -1));
 
         botoBorrar.setIcon(new javax.swing.ImageIcon("/home/alumne/NetBeansProjects/Projecte/src/projecte/images/my-icons-collection (1)/png/my-icons-collection (2)/png/011-interface.png")); // NOI18N
         botoBorrar.setText("Borrar");
@@ -258,11 +264,7 @@ public class GUI extends javax.swing.JFrame {
                 botoBorrarActionPerformed(evt);
             }
         });
-        getContentPane().add(botoBorrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 620, 119, -1));
-
-        Recuperar.setIcon(new javax.swing.ImageIcon("/home/alumne/NetBeansProjects/Projecte/src/projecte/images/my-icons-collection (1)/png/my-icons-collection (2)/png/repeat.png")); // NOI18N
-        Recuperar.setText("Recuperar");
-        getContentPane().add(Recuperar, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 620, -1, -1));
+        getContentPane().add(botoBorrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 620, 119, -1));
 
         Sortir.setIcon(new javax.swing.ImageIcon("/home/alumne/NetBeansProjects/Projecte/src/projecte/images/my-icons-collection (1)/png/018-arrow-1.png")); // NOI18N
         Sortir.addActionListener(new java.awt.event.ActionListener() {
@@ -361,10 +363,10 @@ public class GUI extends javax.swing.JFrame {
             casellaNom.setText((String)taula.getValueAt(filaSel,1));
             casellaLloc.setText((String)taula.getValueAt(filaSel,2));
             casellaNaixement.setText(String.valueOf(taula.getValueAt(filaSel,3)));//per als nombres pasem el value of
-            
-            if((boolean)taula.getValueAt(filaSel,4))
+            //canviem el parametre passat atraves de l'string masculi a opcio masculi o femeni
+            if(taula.getValueAt(filaSel,4).equals(MASCULI))
                 opcioMasculi.setSelected(true);
-                else opcioFemeni.setSelected(true);
+            else opcioFemeni.setSelected(true);
             
             casellaDiners.setText(String.valueOf(taula.getValueAt(filaSel,5)));
         }
@@ -434,7 +436,6 @@ public class GUI extends javax.swing.JFrame {
         
         //comprovem que les dades pasades son correctes dintre els parametres establerts
         if(!dadesCorrectes()){
-            
             JOptionPane.showMessageDialog(this,"Dades de les caselles incorrectes, insereix dades");
             return;
         }
@@ -453,14 +454,14 @@ public class GUI extends javax.swing.JFrame {
                     array[primeraCasellaBuida].setDiners(Double.valueOf(casellaDiners.getText()));
                     array[primeraCasellaBuida].setOmplit(true);
                     primeraCasellaBuida++;
-                    
+                    JOptionPane.showMessageDialog(this,"Nou registre inserit");
             } catch (ArrayIndexOutOfBoundsException e) {
                    
                    //mirem si tenim espai dintre el array,sino en motra el seguent missatge i ens diu si volem sorti o continua sense guardar res
                    Object [] opciones ={"Si","No"};
                    
                    //motrem missatge per tal de informar a l'usari que quina opcio vol continuar
-                int eleccion = JOptionPane.showOptionDialog(rootPane,"Atenció, no caben mes dj en memoria. Si continues no es guardara el inserit. Vols continuar o vols sortir?(N/S):","Informacio"
+                int eleccion = JOptionPane.showOptionDialog(rootPane,"Atenció, no caben mes dj en memoria. Si continues no es guardara el inserit. Vols continuar(N) o vols sortir (S)?:","Informacio"
                  ,JOptionPane.YES_NO_OPTION,
                  //mpsttrem com ocpio predeterminada el no 
                  JOptionPane.QUESTION_MESSAGE,null,opciones,"No");
@@ -583,7 +584,6 @@ public class GUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Inserir;
-    private javax.swing.JButton Recuperar;
     private javax.swing.JButton Sortir;
     private javax.swing.JButton botoBorrar;
     private javax.swing.JButton botoModificar;
